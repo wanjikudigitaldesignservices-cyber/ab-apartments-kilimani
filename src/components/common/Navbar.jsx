@@ -14,7 +14,9 @@ import {
   Settings,
   Database,
   ChevronDown,
-  Layers
+  Layers,
+  Globe,
+  LogOut
 } from 'lucide-react';
 
 export function Navbar() {
@@ -22,6 +24,8 @@ export function Navbar() {
     properties,
     currentPropertyId,
     currentProperty,
+    currentUser,
+    logoutUser,
     switchProperty,
     setIsAddPropertyModalOpen,
     setIsPropertySettingsModalOpen,
@@ -40,7 +44,8 @@ export function Navbar() {
     setIsAddTenantModalOpen,
     launchMpesaStkPush,
     resetToDefault,
-    exportBackup
+    exportBackup,
+    setViewMode
   } = useApp();
 
   const toggleTheme = () => {
@@ -193,6 +198,33 @@ export function Navbar() {
 
         {/* Utility & Settings Actions */}
         <div className="utility-buttons">
+          <button 
+            className="btn-secondary btn-sm"
+            onClick={() => setViewMode('landing')}
+            title="Return to Universal RMS Home & Onboarding Hub"
+          >
+            <Globe size={14} className="text-emerald" />
+            <span className="no-mobile">Universal Hub</span>
+          </button>
+
+          {/* Client Account Profile Pill */}
+          {currentUser && (
+            <div className="client-user-pill no-mobile" title={`Logged in as ${currentUser.name} (${currentUser.company || 'Client'})`}>
+              <div className="user-avatar-circle">{currentUser.avatar || 'PK'}</div>
+              <div className="user-text-meta">
+                <span className="user-name-text">{currentUser.name.split(' ')[0]}</span>
+                <span className="user-plan-tag">{currentUser.plan || 'Pro'}</span>
+              </div>
+              <button 
+                className="user-logout-btn" 
+                onClick={logoutUser}
+                title="Sign out of client session"
+              >
+                <LogOut size={13} />
+              </button>
+            </div>
+          )}
+
           <button 
             className="icon-btn"
             onClick={() => setIsPropertySettingsModalOpen(true)}

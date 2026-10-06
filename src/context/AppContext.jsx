@@ -144,12 +144,76 @@ export function AppProvider({ children }) {
   const [notices, setNotices] = useState(() => loadStoredData(`notices_${currentPropertyId}`, INITIAL_NOTICES));
 
   // Navigation & Role State
+  const [viewMode, setViewMode] = useState(() => loadStoredData("view_mode", "landing")); // 'landing' | 'signup' | 'signin' | 'console'
   const [activeTab, setActiveTab] = useState("dashboard");
   const [userRole, setUserRole] = useState("admin"); // 'admin' | 'resident'
   const [selectedResidentId, setSelectedResidentId] = useState("TEN-001");
   const [searchQuery, setSearchQuery] = useState("");
   const [theme, setTheme] = useState("dark");
   const [isBackendConnected, setIsBackendConnected] = useState(false);
+
+  // Client Authentication State
+  const DEFAULT_CLIENT_USER = {
+    id: "usr-demo-01",
+    name: "Patrick Kariuki",
+    email: "p.kariuki@abholdings.co.ke",
+    company: "AB Property Holdings Ltd",
+    role: "admin",
+    accountType: "Property Management Company",
+    phone: "+254 722 980 120",
+    plan: "Growth Pro",
+    avatar: "PK"
+  };
+
+  const [currentUser, setCurrentUser] = useState(() => loadStoredData("current_user", DEFAULT_CLIENT_USER));
+  const [registeredUsers, setRegisteredUsers] = useState(() => loadStoredData("registered_users", [DEFAULT_CLIENT_USER]));
+
+  const signupUser = (userData) => {
+    const newUser = {
+      id: `usr-${Date.now().toString().slice(-4)}`,
+      ...userData,
+      avatar: (userData.name || 'Client').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+      createdAt: new Date().toISOString()
+    };
+    setRegisteredUsers(prev => [...prev, newUser]);
+    setCurrentUser(newUser);
+    saveStoredData("current_user", newUser);
+    saveStoredData("registered_users", [...registeredUsers, newUser]);
+    addToast("Account Created", `Welcome, ${newUser.name}! Your client workspace is ready.`, "success");
+    return newUser;
+  };
+
+  const loginUser = (email, password) => {
+    const found = registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (found) {
+      setCurrentUser(found);
+      saveStoredData("current_user", found);
+      addToast("Signed In", `Welcome back, ${found.name}.`, "success");
+      return found;
+    }
+    const fallbackUser = {
+      id: `usr-${Date.now().toString().slice(-4)}`,
+      name: email.split('@')[0],
+      email,
+      company: `${email.split('@')[0]} Real Estate`,
+      role: "admin",
+      accountType: "Property Management Firm",
+      phone: "+254 700 000 000",
+      plan: "Professional",
+      avatar: email.slice(0, 2).toUpperCase()
+    };
+    setCurrentUser(fallbackUser);
+    saveStoredData("current_user", fallbackUser);
+    addToast("Signed In", `Logged in as ${fallbackUser.name}.`, "success");
+    return fallbackUser;
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(null);
+    saveStoredData("current_user", null);
+    setViewMode('landing');
+    addToast("Signed Out", "You have signed out of your client session.", "info");
+  };
 
   // Modals & Drawers state
   const [selectedUnit, setSelectedUnit] = useState(null);
@@ -183,6 +247,7 @@ export function AppProvider({ children }) {
   }, []);
 
   // Save changes to LocalStorage
+  useEffect(() => { saveStoredData("view_mode", viewMode); }, [viewMode]);
   useEffect(() => { saveStoredData("client_properties", properties); }, [properties]);
   useEffect(() => { saveStoredData("current_property_id", currentPropertyId); }, [currentPropertyId]);
   useEffect(() => { saveStoredData(`units_${currentPropertyId}`, units); }, [units, currentPropertyId]);
@@ -657,6 +722,8 @@ export function AppProvider({ children }) {
         expenses,
         notices,
         stats,
+        viewMode,
+        setViewMode,
         activeTab,
         setActiveTab,
         userRole,
@@ -673,6 +740,13 @@ export function AppProvider({ children }) {
         theme,
         setTheme,
         isBackendConnected,
+        // Authentication & Client User
+        currentUser,
+        setCurrentUser,
+        registeredUsers,
+        signupUser,
+        loginUser,
+        logoutUser,
         // Modals
         selectedUnit,
         setSelectedUnit,

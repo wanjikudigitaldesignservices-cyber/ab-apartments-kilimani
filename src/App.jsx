@@ -11,6 +11,10 @@ import { ReceiptModal } from './components/common/ReceiptModal';
 import { ReportsModal } from './components/reports/ReportsModal';
 import { ActionModals } from './components/modals/ActionModals';
 
+// Universal Onboarding & Landing Portal
+import { UniversalLandingView } from './components/onboarding/UniversalLandingView';
+import { SignUpView } from './components/auth/SignUpView';
+
 // Management Views
 import { DashboardView } from './components/dashboard/DashboardView';
 import { UnitsView } from './components/units/UnitsView';
@@ -25,7 +29,7 @@ import { NoticesView } from './components/notices/NoticesView';
 import { TenantPortalView } from './components/resident/TenantPortalView';
 
 function AppContent() {
-  const { activeTab, userRole } = useApp();
+  const { activeTab, userRole, viewMode, setViewMode } = useApp();
 
   const renderActiveView = () => {
     // If viewing in Resident Self-Service mode
@@ -58,16 +62,32 @@ function AppContent() {
 
   return (
     <div className="app-container">
-      {/* Top Navigation */}
-      <Navbar />
-
-      {/* Main Content Area with Sidebar */}
-      <div className="main-content-layout">
-        <Sidebar />
-        <main className="main-view-area">
-          {renderActiveView()}
-        </main>
-      </div>
+      {viewMode === 'landing' ? (
+        /* Universal Onboarding & Landing Portal */
+        <UniversalLandingView
+          onEnterConsole={() => setViewMode('console')}
+          onOpenSignUp={() => setViewMode('signup')}
+          onOpenSignIn={() => setViewMode('signin')}
+        />
+      ) : viewMode === 'signup' || viewMode === 'signin' ? (
+        /* Dedicated Client Sign Up & Authentication Portal */
+        <SignUpView
+          initialMode={viewMode === 'signin' ? 'signin' : 'signup'}
+          onSuccess={() => setViewMode('console')}
+          onBack={() => setViewMode('landing')}
+        />
+      ) : (
+        /* Full Property Management Console */
+        <>
+          <Navbar />
+          <div className="main-content-layout">
+            <Sidebar />
+            <main className="main-view-area">
+              {renderActiveView()}
+            </main>
+          </div>
+        </>
+      )}
 
       {/* Global Interactive Modals */}
       <MpesaStkModal />
