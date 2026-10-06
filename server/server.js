@@ -167,7 +167,7 @@ app.post('/api/properties/:id/notices', (req, res) => {
 
 export default app;
 
-if (process.env.NODE_ENV !== 'production' || process.env.RUN_STANDALONE === 'true') {
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`RentSync Multi-Client Rental Engine API running on port ${PORT}`);
   });
