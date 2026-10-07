@@ -1,14 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import {
-  PROPERTY_INFO,
-  INITIAL_UNITS,
-  INITIAL_TENANTS,
-  INITIAL_INVOICES,
-  INITIAL_PAYMENTS,
-  INITIAL_MAINTENANCE,
-  INITIAL_EXPENSES,
-  INITIAL_NOTICES,
   calculateStats,
   loadStoredData,
   saveStoredData,
@@ -17,156 +9,71 @@ import {
 
 const AppContext = createContext();
 
-// Pre-configured Multi-Client Estates
-const DEFAULT_CLIENT_PROPERTIES = [
-  {
-    id: "prop-ab-kilimani",
-    name: "AB Apartments Kilimani",
-    clientName: "AB Property Holdings Ltd",
-    tagline: "Executive Urban Residences & Luxury Suites",
-    address: "Plot 24, Kindaruma Road, Kilimani, Nairobi",
-    city: "Nairobi",
-    county: "Nairobi City County",
-    country: "Kenya",
-    currency: "KES",
-    currencySymbol: "KSh",
-    kraPin: "P051928490B",
-    blocks: ["Block A (Sunburst Wing)", "Block B (Jacaranda Wing)"],
-    floors: 6,
-    totalUnits: 48,
-    image: "/ab-facade.jpg",
-    billing: {
-      mpesaPaybill: "408920",
-      mpesaTill: "982145",
-      bankName: "NCBA Bank Kenya PLC",
-      bankBranch: "Upper Hill Branch",
-      accountNumber: "1002938471001",
-      lateFeePercent: 5,
-      waterRatePerUnit: 160,
-      dueDay: 5
-    },
-    contacts: {
-      manager: "Patrick Kariuki",
-      phone: "+254 722 980 120",
-      email: "management@abapartmentskilimani.co.ke",
-      caretaker: "Francis Mwangi",
-      caretakerPhone: "+254 711 445 522",
-      securityGate: "+254 733 998 811"
-    }
-  },
-  {
-    id: "prop-kilimani-heights",
-    name: "Kilimani Heights Suites",
-    clientName: "Heights Capital Properties",
-    tagline: "Contemporary Executive Suites & Corporate Residences",
-    address: "Argwings Kodhek Road, Kilimani, Nairobi",
-    city: "Nairobi",
-    county: "Nairobi City County",
-    country: "Kenya",
-    currency: "KES",
-    currencySymbol: "KSh",
-    kraPin: "P051839201A",
-    blocks: ["East Tower", "West Tower"],
-    floors: 8,
-    totalUnits: 32,
-    image: "/ab-facade.jpg",
-    billing: {
-      mpesaPaybill: "522123",
-      mpesaTill: "409182",
-      bankName: "Standard Chartered Bank",
-      bankBranch: "Yaya Centre Branch",
-      accountNumber: "0108291049201",
-      lateFeePercent: 7.5,
-      waterRatePerUnit: 175,
-      dueDay: 5
-    },
-    contacts: {
-      manager: "Grace Wanjiru",
-      phone: "+254 721 440 918",
-      email: "info@kilimaniheights.co.ke",
-      caretaker: "Peter Odhiambo",
-      caretakerPhone: "+254 710 992 341",
-      securityGate: "+254 732 110 900"
-    }
-  },
-  {
-    id: "prop-riverside-haven",
-    name: "Riverside Haven Duplexes",
-    clientName: "Riverside Luxury Assets",
-    tagline: "Serene Luxury Townhouses & Riverside Living",
-    address: "Riverside Drive, Westlands, Nairobi",
-    city: "Nairobi",
-    county: "Nairobi City County",
-    country: "Kenya",
-    currency: "KES",
-    currencySymbol: "KSh",
-    kraPin: "P052910482C",
-    blocks: ["Phase 1 (Villas 1-9)", "Phase 2 (Villas 10-18)"],
-    floors: 3,
-    totalUnits: 18,
-    image: "/ab-interior.jpg",
-    billing: {
-      mpesaPaybill: "400200",
-      mpesaTill: "661290",
-      bankName: "I&M Bank Kenya",
-      bankBranch: "Riverside Branch",
-      accountNumber: "2009182049102",
-      lateFeePercent: 5,
-      waterRatePerUnit: 180,
-      dueDay: 1
-    },
-    contacts: {
-      manager: "Alex Mwiti",
-      phone: "+254 722 884 100",
-      email: "manager@riversidehaven.co.ke",
-      caretaker: "Salim Bakari",
-      caretakerPhone: "+254 713 552 901",
-      securityGate: "+254 731 002 888"
-    }
-  }
-];
+// Clean Initial Multi-Client Properties Store (No demo estates)
+const DEFAULT_CLIENT_PROPERTIES = [];
 
 export function AppProvider({ children }) {
   // Multi-Client Properties Store
-  const [properties, setProperties] = useState(() => loadStoredData("client_properties", DEFAULT_CLIENT_PROPERTIES));
-  const [currentPropertyId, setCurrentPropertyId] = useState(() => loadStoredData("current_property_id", "prop-ab-kilimani"));
+  const [properties, setProperties] = useState(() => loadStoredData("client_properties", []));
+  const [currentPropertyId, setCurrentPropertyId] = useState(() => loadStoredData("current_property_id", null));
 
   // Active Property
-  const currentProperty = properties.find(p => p.id === currentPropertyId) || properties[0] || DEFAULT_CLIENT_PROPERTIES[0];
+  const currentProperty = properties.find(p => p.id === currentPropertyId) || properties[0] || null;
+
+  // Safe Property Fallback
+  const safePropertyInfo = currentProperty || {
+    name: "Universal Rental Workspace",
+    clientName: "Universal Properties Ltd",
+    tagline: "Configure your property in the Setup Wizard",
+    address: "Universal Cloud",
+    city: "Nairobi",
+    county: "Nairobi City County",
+    country: "Kenya",
+    currency: "KES",
+    currencySymbol: "KSh",
+    blocks: ["Main Wing"],
+    floors: 0,
+    totalUnits: 0,
+    billing: {
+      mpesaPaybill: "N/A",
+      mpesaTill: "N/A",
+      bankName: "N/A",
+      accountNumber: "N/A",
+      lateFeePercent: 0,
+      waterRatePerUnit: 0,
+      dueDay: 5
+    },
+    contacts: {
+      manager: "",
+      phone: "",
+      email: "",
+      caretaker: "",
+      caretakerPhone: "",
+      securityGate: ""
+    }
+  };
 
   // Core Collections (Stored with property scope)
-  const [units, setUnits] = useState(() => loadStoredData(`units_${currentPropertyId}`, INITIAL_UNITS));
-  const [tenants, setTenants] = useState(() => loadStoredData(`tenants_${currentPropertyId}`, INITIAL_TENANTS));
-  const [invoices, setInvoices] = useState(() => loadStoredData(`invoices_${currentPropertyId}`, INITIAL_INVOICES));
-  const [payments, setPayments] = useState(() => loadStoredData(`payments_${currentPropertyId}`, INITIAL_PAYMENTS));
-  const [maintenance, setMaintenance] = useState(() => loadStoredData(`maintenance_${currentPropertyId}`, INITIAL_MAINTENANCE));
-  const [expenses, setExpenses] = useState(() => loadStoredData(`expenses_${currentPropertyId}`, INITIAL_EXPENSES));
-  const [notices, setNotices] = useState(() => loadStoredData(`notices_${currentPropertyId}`, INITIAL_NOTICES));
+  const [units, setUnits] = useState(() => currentPropertyId ? loadStoredData(`units_${currentPropertyId}`, []) : []);
+  const [tenants, setTenants] = useState(() => currentPropertyId ? loadStoredData(`tenants_${currentPropertyId}`, []) : []);
+  const [invoices, setInvoices] = useState(() => currentPropertyId ? loadStoredData(`invoices_${currentPropertyId}`, []) : []);
+  const [payments, setPayments] = useState(() => currentPropertyId ? loadStoredData(`payments_${currentPropertyId}`, []) : []);
+  const [maintenance, setMaintenance] = useState(() => currentPropertyId ? loadStoredData(`maintenance_${currentPropertyId}`, []) : []);
+  const [expenses, setExpenses] = useState(() => currentPropertyId ? loadStoredData(`expenses_${currentPropertyId}`, []) : []);
+  const [notices, setNotices] = useState(() => currentPropertyId ? loadStoredData(`notices_${currentPropertyId}`, []) : []);
 
   // Navigation & Role State
   const [viewMode, setViewMode] = useState(() => loadStoredData("view_mode", "landing")); // 'landing' | 'signup' | 'signin' | 'console'
   const [activeTab, setActiveTab] = useState("dashboard");
   const [userRole, setUserRole] = useState("admin"); // 'admin' | 'resident'
-  const [selectedResidentId, setSelectedResidentId] = useState("TEN-001");
+  const [selectedResidentId, setSelectedResidentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [theme, setTheme] = useState("dark");
   const [isBackendConnected, setIsBackendConnected] = useState(false);
 
-  // Client Authentication State
-  const DEFAULT_CLIENT_USER = {
-    id: "usr-demo-01",
-    name: "Patrick Kariuki",
-    email: "p.kariuki@abholdings.co.ke",
-    company: "AB Property Holdings Ltd",
-    role: "admin",
-    accountType: "Property Management Company",
-    phone: "+254 722 980 120",
-    plan: "Growth Pro",
-    avatar: "PK"
-  };
-
-  const [currentUser, setCurrentUser] = useState(() => loadStoredData("current_user", DEFAULT_CLIENT_USER));
-  const [registeredUsers, setRegisteredUsers] = useState(() => loadStoredData("registered_users", [DEFAULT_CLIENT_USER]));
+  // Client Authentication State (Clean - no hardcoded demo accounts)
+  const [currentUser, setCurrentUser] = useState(() => loadStoredData("current_user", null));
+  const [registeredUsers, setRegisteredUsers] = useState(() => loadStoredData("registered_users", []));
 
   const signupUser = (userData) => {
     const newUser = {
@@ -202,8 +109,10 @@ export function AppProvider({ children }) {
       plan: "Professional",
       avatar: email.slice(0, 2).toUpperCase()
     };
+    setRegisteredUsers(prev => [...prev, fallbackUser]);
     setCurrentUser(fallbackUser);
     saveStoredData("current_user", fallbackUser);
+    saveStoredData("registered_users", [...registeredUsers, fallbackUser]);
     addToast("Signed In", `Logged in as ${fallbackUser.name}.`, "success");
     return fallbackUser;
   };
@@ -250,25 +159,25 @@ export function AppProvider({ children }) {
   useEffect(() => { saveStoredData("view_mode", viewMode); }, [viewMode]);
   useEffect(() => { saveStoredData("client_properties", properties); }, [properties]);
   useEffect(() => { saveStoredData("current_property_id", currentPropertyId); }, [currentPropertyId]);
-  useEffect(() => { saveStoredData(`units_${currentPropertyId}`, units); }, [units, currentPropertyId]);
-  useEffect(() => { saveStoredData(`tenants_${currentPropertyId}`, tenants); }, [tenants, currentPropertyId]);
-  useEffect(() => { saveStoredData(`invoices_${currentPropertyId}`, invoices); }, [invoices, currentPropertyId]);
-  useEffect(() => { saveStoredData(`payments_${currentPropertyId}`, payments); }, [payments, currentPropertyId]);
-  useEffect(() => { saveStoredData(`maintenance_${currentPropertyId}`, maintenance); }, [maintenance, currentPropertyId]);
-  useEffect(() => { saveStoredData(`expenses_${currentPropertyId}`, expenses); }, [expenses, currentPropertyId]);
-  useEffect(() => { saveStoredData(`notices_${currentPropertyId}`, notices); }, [notices, currentPropertyId]);
+  useEffect(() => { if (currentPropertyId) saveStoredData(`units_${currentPropertyId}`, units); }, [units, currentPropertyId]);
+  useEffect(() => { if (currentPropertyId) saveStoredData(`tenants_${currentPropertyId}`, tenants); }, [tenants, currentPropertyId]);
+  useEffect(() => { if (currentPropertyId) saveStoredData(`invoices_${currentPropertyId}`, invoices); }, [invoices, currentPropertyId]);
+  useEffect(() => { if (currentPropertyId) saveStoredData(`payments_${currentPropertyId}`, payments); }, [payments, currentPropertyId]);
+  useEffect(() => { if (currentPropertyId) saveStoredData(`maintenance_${currentPropertyId}`, maintenance); }, [maintenance, currentPropertyId]);
+  useEffect(() => { if (currentPropertyId) saveStoredData(`expenses_${currentPropertyId}`, expenses); }, [expenses, currentPropertyId]);
+  useEffect(() => { if (currentPropertyId) saveStoredData(`notices_${currentPropertyId}`, notices); }, [notices, currentPropertyId]);
 
   // Switch Property Handler
   const switchProperty = (propId) => {
     setCurrentPropertyId(propId);
     // Reload collections for this property
-    const propUnits = loadStoredData(`units_${propId}`, propId === "prop-ab-kilimani" ? INITIAL_UNITS : []);
-    const propTenants = loadStoredData(`tenants_${propId}`, propId === "prop-ab-kilimani" ? INITIAL_TENANTS : []);
-    const propInvoices = loadStoredData(`invoices_${propId}`, propId === "prop-ab-kilimani" ? INITIAL_INVOICES : []);
-    const propPayments = loadStoredData(`payments_${propId}`, propId === "prop-ab-kilimani" ? INITIAL_PAYMENTS : []);
-    const propMaintenance = loadStoredData(`maintenance_${propId}`, propId === "prop-ab-kilimani" ? INITIAL_MAINTENANCE : []);
-    const propExpenses = loadStoredData(`expenses_${propId}`, propId === "prop-ab-kilimani" ? INITIAL_EXPENSES : []);
-    const propNotices = loadStoredData(`notices_${propId}`, propId === "prop-ab-kilimani" ? INITIAL_NOTICES : []);
+    const propUnits = loadStoredData(`units_${propId}`, []);
+    const propTenants = loadStoredData(`tenants_${propId}`, []);
+    const propInvoices = loadStoredData(`invoices_${propId}`, []);
+    const propPayments = loadStoredData(`payments_${propId}`, []);
+    const propMaintenance = loadStoredData(`maintenance_${propId}`, []);
+    const propExpenses = loadStoredData(`expenses_${propId}`, []);
+    const propNotices = loadStoredData(`notices_${propId}`, []);
 
     setUnits(propUnits);
     setTenants(propTenants);
@@ -277,10 +186,12 @@ export function AppProvider({ children }) {
     setMaintenance(propMaintenance);
     setExpenses(propExpenses);
     setNotices(propNotices);
-    if (propTenants.length > 0) setSelectedResidentId(propTenants[0].id);
+    setSelectedResidentId(propTenants[0]?.id || null);
 
     const targetProp = properties.find(p => p.id === propId);
-    addToast("Client Switched", `Active property changed to ${targetProp?.name || propId}`, "info");
+    if (targetProp) {
+      addToast("Property Switched", `Active property changed to ${targetProp.name}`, "info");
+    }
   };
 
   // Create New Client Property
@@ -662,16 +573,18 @@ export function AppProvider({ children }) {
 
   const resetToDefault = () => {
     clearAllStoredData();
-    setProperties(DEFAULT_CLIENT_PROPERTIES);
-    setCurrentPropertyId("prop-ab-kilimani");
-    setUnits(INITIAL_UNITS);
-    setTenants(INITIAL_TENANTS);
-    setInvoices(INITIAL_INVOICES);
-    setPayments(INITIAL_PAYMENTS);
-    setMaintenance(INITIAL_MAINTENANCE);
-    setExpenses(INITIAL_EXPENSES);
-    setNotices(INITIAL_NOTICES);
-    addToast("System Reset", "Demo data restored to initial factory defaults.", "info");
+    setProperties([]);
+    setCurrentPropertyId(null);
+    setUnits([]);
+    setTenants([]);
+    setInvoices([]);
+    setPayments([]);
+    setMaintenance([]);
+    setExpenses([]);
+    setNotices([]);
+    setCurrentUser(null);
+    setRegisteredUsers([]);
+    addToast("System Reset", "Universal RMS data cleared to a clean, empty workspace.", "info");
   };
 
   const exportBackup = () => {
@@ -709,11 +622,11 @@ export function AppProvider({ children }) {
       value={{
         properties,
         currentPropertyId,
-        currentProperty,
+        currentProperty: safePropertyInfo,
         switchProperty,
         createProperty,
         updatePropertySettings,
-        propertyInfo: currentProperty,
+        propertyInfo: safePropertyInfo,
         units,
         tenants,
         invoices,

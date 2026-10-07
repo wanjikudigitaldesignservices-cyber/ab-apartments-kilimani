@@ -61,18 +61,6 @@ export function SignUpView({ initialMode = 'signup', onSuccess, onBack }) {
 
   const strength = calculatePasswordStrength(password);
 
-  // Auto-Fill Demo Landlord Profile for instant testing
-  const handleAutoFillDemo = () => {
-    setFullName('Sarah Muthoni Wanjiku');
-    setCompanyName('Emerald Heights Property Holdings');
-    setEmail('sarah.wanjiku@emeraldheights.co.ke');
-    setPhone('+254 722 450 880');
-    setAccountType('Property Management Company');
-    setPlan('Growth Pro');
-    setPassword('RentSync@2026!');
-    setConfirmPassword('RentSync@2026!');
-    setAgreeTerms(true);
-  };
 
   const handleSignUpSubmit = (e) => {
     e.preventDefault();
@@ -121,11 +109,6 @@ export function SignUpView({ initialMode = 'signup', onSuccess, onBack }) {
     if (onSuccess) onSuccess();
   };
 
-  const handleDemoLogin = (emailAddress, propId) => {
-    loginUser(emailAddress, 'password');
-    if (propId) switchProperty(propId);
-    if (onSuccess) onSuccess();
-  };
 
   return (
     <div className="auth-page-root animate-fade-in">
@@ -145,13 +128,6 @@ export function SignUpView({ initialMode = 'signup', onSuccess, onBack }) {
           <button className="btn-secondary btn-sm" onClick={onBack}>
             <ArrowLeft size={14} />
             <span>Universal Home</span>
-          </button>
-          <button 
-            className="btn-gold btn-sm"
-            onClick={() => handleDemoLogin("p.kariuki@abholdings.co.ke", "prop-ab-kilimani")}
-          >
-            <Sparkles size={14} />
-            <span>Quick Demo Login</span>
           </button>
         </div>
       </header>
@@ -214,13 +190,13 @@ export function SignUpView({ initialMode = 'signup', onSuccess, onBack }) {
                 ))}
               </div>
               <p className="testimonial-quote">
-                "RentSync transformed our Kilimani apartment management. Rent collection is 99% automated with M-Pesa STK pushes, and our tenants have instant access to receipts."
+                "RentSync transformed our property operations across multiple residential complexes. Rent collection is streamlined with Safaricom Daraja M-Pesa STK push integration, automated invoicing, and instant tenant receipts."
               </p>
               <div className="testimonial-author">
-                <div className="author-avatar">PK</div>
+                <div className="author-avatar">EP</div>
                 <div>
-                  <strong>Patrick Kariuki</strong>
-                  <span>Director, AB Property Holdings Ltd</span>
+                  <strong>Estate Portfolio Management</strong>
+                  <span>Kenya Real Estate Asset Advisory</span>
                 </div>
               </div>
             </div>
@@ -258,15 +234,6 @@ export function SignUpView({ initialMode = 'signup', onSuccess, onBack }) {
                     <h3>Setup Your RentSync Workspace</h3>
                     <p className="font-xs text-muted">Join hundreds of property owners and estate firms across Kenya</p>
                   </div>
-                  <button
-                    type="button"
-                    className="btn-gold btn-xs"
-                    onClick={handleAutoFillDemo}
-                    title="Fill sample details for quick testing"
-                  >
-                    <Zap size={13} />
-                    <span>Auto-Fill Demo</span>
-                  </button>
                 </div>
 
                 <div className="form-grid-2col">
@@ -467,7 +434,7 @@ export function SignUpView({ initialMode = 'signup', onSuccess, onBack }) {
                     <Mail size={15} className="input-icon" />
                     <input
                       type="email"
-                      placeholder="e.g. p.kariuki@abholdings.co.ke"
+                      placeholder="e.g. director@company.co.ke"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -499,26 +466,7 @@ export function SignUpView({ initialMode = 'signup', onSuccess, onBack }) {
                   </div>
                 </div>
 
-                {/* Quick Demo Logins */}
-                <div className="quick-demo-accounts-box glass-card" style={{ marginTop: '18px' }}>
-                  <span className="font-xs text-dim">Quick Test Logins (1-Click):</span>
-                  <div className="demo-accounts-buttons">
-                    <button
-                      type="button"
-                      className="btn-secondary btn-xs"
-                      onClick={() => handleDemoLogin("p.kariuki@abholdings.co.ke", "prop-ab-kilimani")}
-                    >
-                      <span>🏢 Manager: AB Apartments</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-secondary btn-xs"
-                      onClick={() => handleDemoLogin("amina.odhiambo@gmail.com", "prop-ab-kilimani")}
-                    >
-                      <span>👤 Resident: Unit A302</span>
-                    </button>
-                  </div>
-                </div>
+
 
                 {/* Action Button */}
                 <div className="auth-actions-group" style={{ marginTop: '22px' }}>

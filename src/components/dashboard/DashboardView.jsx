@@ -60,22 +60,33 @@ export function DashboardView() {
         <div className="hero-content">
           <div className="hero-badge">
             <span className="pulse-dot"></span>
-            <span>Kilimani Premier Asset Management</span>
+            <span>{propertyInfo.clientName || "Executive Asset Management"}</span>
           </div>
           <h2>{propertyInfo.name}</h2>
           <p className="hero-description">
-            {propertyInfo.address} • 2 High-Rise Wings ({propertyInfo.blocks.join(' & ')}) • 48 Executive Units
+            {propertyInfo.address} • {propertyInfo.city} • {propertyInfo.totalUnits || units.length} Units {propertyInfo.blocks?.length ? `(${propertyInfo.blocks.join(' & ')})` : ''}
           </p>
 
           <div className="hero-quick-actions">
             <button 
               className="btn-mpesa"
-              onClick={() => launchMpesaStkPush({
-                phone: "+254 722 341 890",
-                unitId: "A302",
-                amount: 86420,
-                tenantName: "Sharon Akinyi Ochieng"
-              })}
+              onClick={() => {
+                if (tenants.length > 0) {
+                  launchMpesaStkPush({
+                    phone: tenants[0].phone,
+                    unitId: tenants[0].unitId,
+                    amount: tenants[0].baseRent || 50000,
+                    tenantName: tenants[0].name
+                  });
+                } else {
+                  launchMpesaStkPush({
+                    phone: "+254 700 000 000",
+                    unitId: units[0]?.id || "101",
+                    amount: units[0]?.baseRent || 50000,
+                    tenantName: "Resident"
+                  });
+                }
+              }}
             >
               <Smartphone size={16} />
               <span>Express M-Pesa STK</span>
@@ -91,7 +102,7 @@ export function DashboardView() {
 
             <button 
               className="btn-secondary"
-              onClick={() => generateBulkInvoices("November 2026")}
+              onClick={() => generateBulkInvoices("Current Month")}
             >
               <FileText size={16} />
               <span>Batch Billing</span>
@@ -110,8 +121,8 @@ export function DashboardView() {
         {/* Hero Visual Preview */}
         <div className="hero-image-card">
           <img 
-            src="/ab-facade.jpg" 
-            alt="AB Apartments Kilimani Facade" 
+            src={propertyInfo.image || "/ab-facade.jpg"} 
+            alt={propertyInfo.name} 
             className="hero-img"
             onError={(e) => {
               e.target.style.display = 'none';
@@ -120,7 +131,7 @@ export function DashboardView() {
           <div className="hero-image-overlay">
             <div className="overlay-pill">
               <Sparkles size={14} className="text-gold" />
-              <span>Solar Backup • Heated Rooftop Pool</span>
+              <span>{propertyInfo.city} • Paybill {propertyInfo.billing?.mpesaPaybill || "Daraja"}</span>
             </div>
           </div>
         </div>

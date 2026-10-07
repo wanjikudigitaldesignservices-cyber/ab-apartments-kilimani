@@ -67,12 +67,12 @@ export function OnboardingView({ onComplete }) {
     '24/7 Biometric Security Gate & CCTV',
     'Rooftop Heated Pool & Fitness Gym'
   ]);
-  const [managerName, setManagerName] = useState('Patrick Kariuki');
-  const [managerPhone, setManagerPhone] = useState('+254 722 980 120');
-  const [managerEmail, setManagerEmail] = useState('management@estate.co.ke');
-  const [caretakerName, setCaretakerName] = useState('Francis Mwangi');
-  const [caretakerPhone, setCaretakerPhone] = useState('+254 711 445 522');
-  const [securityPhone, setSecurityPhone] = useState('+254 733 998 811');
+  const [managerName, setManagerName] = useState('');
+  const [managerPhone, setManagerPhone] = useState('');
+  const [managerEmail, setManagerEmail] = useState('');
+  const [caretakerName, setCaretakerName] = useState('');
+  const [caretakerPhone, setCaretakerPhone] = useState('');
+  const [securityPhone, setSecurityPhone] = useState('');
 
   const toggleAmenity = (item) => {
     if (amenities.includes(item)) {
@@ -129,10 +129,6 @@ export function OnboardingView({ onComplete }) {
     if (onComplete) onComplete();
   };
 
-  const handleLaunchDemo = (propId) => {
-    switchProperty(propId);
-    if (onComplete) onComplete();
-  };
 
   return (
     <div className="onboarding-page-container animate-fade-in">
@@ -185,7 +181,7 @@ export function OnboardingView({ onComplete }) {
                   <label>Property / Building Name *</label>
                   <input
                     type="text"
-                    placeholder="e.g. AB Apartments Kilimani"
+                    placeholder="e.g. Sunrise View Apartments"
                     value={propName}
                     onChange={(e) => setPropName(e.target.value)}
                     required
@@ -578,7 +574,7 @@ export function OnboardingView({ onComplete }) {
               <div className="review-summary-box glass-card">
                 <div className="review-row">
                   <span className="lbl">Property Name:</span>
-                  <strong>{propName || "AB Apartments Kilimani"}</strong>
+                  <strong>{propName || "Sunrise View Apartments"}</strong>
                 </div>
                 <div className="review-row">
                   <span className="lbl">Client Organization:</span>
@@ -661,35 +657,40 @@ export function OnboardingView({ onComplete }) {
             </div>
           </div>
 
-          {/* Quick Demo Launch Options */}
-          <div className="demo-estates-card glass-card">
+          {/* Universal Getting Started Guide */}
+          <div className="setup-guide-card glass-card">
             <div className="section-header">
               <div className="title-with-badge">
-                <Play size={16} className="text-gold" />
-                <h4>Explore Pre-Configured Demo Estates</h4>
+                <Sparkles size={16} className="text-gold" />
+                <h4>Fast-Track 3-Step Estate Launch</h4>
               </div>
             </div>
-            <p className="font-xs text-muted" style={{ marginBottom: '12px' }}>
-              Want to see how it works first? Click any pre-loaded estate below:
+            <p className="font-xs text-muted" style={{ marginBottom: '14px' }}>
+              Complete the setup wizard on the left to activate your personalized property workspace:
             </p>
 
-            <div className="demo-cards-list">
-              {properties.map(p => (
-                <div
-                  key={p.id}
-                  className="demo-item-card glass-card"
-                  onClick={() => handleLaunchDemo(p.id)}
-                >
-                  <div className="demo-info">
-                    <strong>{p.name}</strong>
-                    <div className="font-xs text-muted">{p.city} • {p.totalUnits} Units • Paybill {p.billing.mpesaPaybill}</div>
-                  </div>
-                  <button className="btn-secondary btn-xs">
-                    <span>Launch</span>
-                    <ArrowRight size={12} />
-                  </button>
+            <div className="setup-steps-list">
+              <div className="setup-step-item">
+                <div className="step-num-badge">1</div>
+                <div className="step-text">
+                  <strong>Specify Building Layout</strong>
+                  <p className="font-xs text-muted">Set up blocks, floors, and unit count to auto-generate floor matrices.</p>
                 </div>
-              ))}
+              </div>
+              <div className="setup-step-item">
+                <div className="step-num-badge">2</div>
+                <div className="step-text">
+                  <strong>Link M-Pesa & Bank Paybills</strong>
+                  <p className="font-xs text-muted">Input your Daraja Paybill or Till for instant STK Push automation.</p>
+                </div>
+              </div>
+              <div className="setup-step-item">
+                <div className="step-num-badge">3</div>
+                <div className="step-text">
+                  <strong>Deploy & Manage Real-Time</strong>
+                  <p className="font-xs text-muted">Click 'Provision Property & Launch Console' to enter your clean management console.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

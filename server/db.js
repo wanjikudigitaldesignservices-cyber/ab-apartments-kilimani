@@ -18,134 +18,17 @@ if (!fs.existsSync(DATA_DIR)) {
   }
 }
 
-// Seed Client Properties
-const DEFAULT_PROPERTIES = [
-  {
-    id: "prop-ab-kilimani",
-    name: "AB Apartments Kilimani",
-    clientName: "AB Property Holdings Kenya Ltd",
-    tagline: "Executive Urban Residences & Luxury Suites",
-    address: "Plot 24, Kindaruma Road, Kilimani, Nairobi",
-    city: "Nairobi",
-    county: "Nairobi City County",
-    country: "Kenya",
-    currency: "KES",
-    currencySymbol: "KSh",
-    kraPin: "P051928490B",
-    blocks: ["Block A (Sunburst Wing)", "Block B (Jacaranda Wing)"],
-    floors: 6,
-    totalUnits: 48,
-    image: "/ab-facade.jpg",
-    amenities: [
-      "Heated Rooftop Infinity Pool",
-      "Rooftop Fitness Gym",
-      "Borehole with RO Filtration",
-      "Automatic Standby Generator (250kVA)",
-      "High-Speed Schindler Lifts",
-      "24/7 Biometric Security Gate"
-    ],
-    billing: {
-      mpesaPaybill: "408920",
-      mpesaTill: "982145",
-      bankName: "NCBA Bank Kenya PLC",
-      bankBranch: "Upper Hill Branch",
-      accountNumber: "1002938471001",
-      lateFeePercent: 5,
-      waterRatePerUnit: 160,
-      dueDay: 5
-    },
-    contacts: {
-      manager: "Patrick Kariuki",
-      phone: "+254 722 980 120",
-      email: "management@abapartmentskilimani.co.ke",
-      caretaker: "Francis Mwangi",
-      caretakerPhone: "+254 711 445 522",
-      securityGate: "+254 733 998 811"
-    }
-  },
-  {
-    id: "prop-kilimani-heights",
-    name: "Kilimani Heights Executive Suites",
-    clientName: "Heights Capital Properties",
-    tagline: "Contemporary Living in the Heart of Kilimani",
-    address: "Argwings Kodhek Road, Kilimani, Nairobi",
-    city: "Nairobi",
-    county: "Nairobi City County",
-    country: "Kenya",
-    currency: "KES",
-    currencySymbol: "KSh",
-    kraPin: "P051839201A",
-    blocks: ["East Tower", "West Tower"],
-    floors: 8,
-    totalUnits: 32,
-    image: "/ab-facade.jpg",
-    amenities: [
-      "Conference Room & Lounge",
-      "Solar Backup Lighting",
-      "Basement Parking (2 slots/unit)",
-      "Borehole Water Backup"
-    ],
-    billing: {
-      mpesaPaybill: "522123",
-      mpesaTill: "409182",
-      bankName: "Standard Chartered Kenya",
-      bankBranch: "Yaya Centre Branch",
-      accountNumber: "0108291049201",
-      lateFeePercent: 7.5,
-      waterRatePerUnit: 175,
-      dueDay: 5
-    },
-    contacts: {
-      manager: "Grace Wanjiru",
-      phone: "+254 721 440 918",
-      email: "info@kilimaniheights.co.ke",
-      caretaker: "Peter Odhiambo",
-      caretakerPhone: "+254 710 992 341",
-      securityGate: "+254 732 110 900"
-    }
-  },
-  {
-    id: "prop-riverside-haven",
-    name: "Riverside Haven Duplexes",
-    clientName: "Riverside Luxury Assets Ltd",
-    tagline: "Serene Luxury Townhouses & Riverside Living",
-    address: "Riverside Drive, Westlands, Nairobi",
-    city: "Nairobi",
-    county: "Nairobi City County",
-    country: "Kenya",
-    currency: "KES",
-    currencySymbol: "KSh",
-    kraPin: "P052910482C",
-    blocks: ["Phase 1 (Villas 1-9)", "Phase 2 (Villas 10-18)"],
-    floors: 3,
-    totalUnits: 18,
-    image: "/ab-interior.jpg",
-    amenities: [
-      "Private Plunge Pools",
-      "Private Landscaped Gardens",
-      "Clubhouse & Tennis Court",
-      "Solar Water Heating"
-    ],
-    billing: {
-      mpesaPaybill: "400200",
-      mpesaTill: "661290",
-      bankName: "I&M Bank Kenya",
-      bankBranch: "Riverside Branch",
-      accountNumber: "2009182049102",
-      lateFeePercent: 5,
-      waterRatePerUnit: 180,
-      dueDay: 1
-    },
-    contacts: {
-      manager: "Alex Mwiti",
-      phone: "+254 722 884 100",
-      email: "manager@riversidehaven.co.ke",
-      caretaker: "Salim Bakari",
-      caretakerPhone: "+254 713 552 901",
-      securityGate: "+254 731 002 888"
-    }
-  }
-];
+// Clean Initial Database Schema - ZERO DEMO DATA OR DEMO ESTATES
+const getEmptyDatabase = () => ({
+  properties: [],
+  units: [],
+  tenants: [],
+  invoices: [],
+  payments: [],
+  maintenance: [],
+  expenses: [],
+  notices: []
+});
 
 class Database {
   constructor() {
@@ -156,78 +39,24 @@ class Database {
     try {
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf8');
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        // Ensure all collections exist
+        return {
+          properties: parsed.properties || [],
+          units: parsed.units || [],
+          tenants: parsed.tenants || [],
+          invoices: parsed.invoices || [],
+          payments: parsed.payments || [],
+          maintenance: parsed.maintenance || [],
+          expenses: parsed.expenses || [],
+          notices: parsed.notices || []
+        };
       }
     } catch (e) {
-      console.error("Error reading database file, initializing defaults:", e);
+      console.error("Error reading database file, initializing clean database:", e);
     }
 
-    // Default Seed
-    const initialDb = {
-      properties: DEFAULT_PROPERTIES,
-      units: [],
-      tenants: [],
-      invoices: [],
-      payments: [],
-      maintenance: [],
-      expenses: [],
-      notices: []
-    };
-
-    // Auto-seed units for AB Apartments Kilimani
-    for (let fl = 1; fl <= 6; fl++) {
-      ['A', 'B'].forEach(wing => {
-        const blk = wing === 'A' ? "Block A (Sunburst Wing)" : "Block B (Jacaranda Wing)";
-        initialDb.units.push(
-          { id: `${wing}${fl}01`, propertyId: "prop-ab-kilimani", block: blk, floor: fl, type: "Studio", sqm: 45, baseRent: 50000, serviceCharge: 6000, status: fl === 4 && wing === 'A' ? "vacant" : "occupied", kplcMeter: `441098${wing}-01`, waterMeter: `WTR-${wing}${fl}01` },
-          { id: `${wing}${fl}02`, propertyId: "prop-ab-kilimani", block: blk, floor: fl, type: "1-Bedroom", sqm: 68, baseRent: 72000, serviceCharge: 7500, status: fl === 3 && wing === 'B' ? "vacant" : "occupied", kplcMeter: `441098${wing}-02`, waterMeter: `WTR-${wing}${fl}02` },
-          { id: `${wing}${fl}03`, propertyId: "prop-ab-kilimani", block: blk, floor: fl, type: "2-Bedroom Deluxe", sqm: 112, baseRent: 105000, serviceCharge: 9000, status: fl === 1 && wing === 'B' ? "vacant" : "occupied", kplcMeter: `441098${wing}-03`, waterMeter: `WTR-${wing}${fl}03` },
-          { id: `${wing}${fl}04`, propertyId: "prop-ab-kilimani", block: blk, floor: fl, type: fl === 6 ? "3-Bedroom Penthouse" : "2-Bedroom Deluxe", sqm: fl === 6 ? 185 : 115, baseRent: fl === 6 ? 165000 : 105000, serviceCharge: fl === 6 ? 13000 : 9000, status: fl === 1 && wing === 'A' ? "vacant" : "occupied", kplcMeter: `441098${wing}-04`, waterMeter: `WTR-${wing}${fl}04` }
-        );
-      });
-    }
-
-    // Seed Initial Tenants
-    initialDb.tenants = [
-      { id: "TEN-001", propertyId: "prop-ab-kilimani", name: "Sharon Akinyi Ochieng", email: "sharon.ochieng@gmail.com", phone: "+254 722 341 890", nationalId: "28491820", unitId: "A302", occupation: "Senior Software Engineer (Google Kenya)", vehiclePlate: "KDF 219Q", leaseStart: "2025-06-01", leaseEnd: "2027-05-31", depositAmount: 75000, status: "active", arrears: 0, emergencyContact: { name: "David Ochieng", relation: "Brother", phone: "+254 733 912 301" } },
-      { id: "TEN-002", propertyId: "prop-ab-kilimani", name: "Brian Kiprop Cheruiyot", email: "brian.kiprop@pwc.com", phone: "+254 718 902 443", nationalId: "31892014", unitId: "A204", occupation: "Financial Risk Manager (PwC)", vehiclePlate: "KDG 849X", leaseStart: "2025-03-01", leaseEnd: "2027-02-28", depositAmount: 105000, status: "active", arrears: 123645, emergencyContact: { name: "Mercy Cheruiyot", relation: "Spouse", phone: "+254 720 119 450" } },
-      { id: "TEN-003", propertyId: "prop-ab-kilimani", name: "Dr. Amina Mohamed Hassan", email: "dr.amina.hassan@akuh.edu", phone: "+254 701 552 198", nationalId: "24901842", unitId: "A604", occupation: "Consultant Pediatrician (Aga Khan Hospital)", vehiclePlate: "KDA 004M", leaseStart: "2024-11-01", leaseEnd: "2026-10-31", depositAmount: 165000, status: "active", arrears: 0, emergencyContact: { name: "Farhan Hassan", relation: "Spouse", phone: "+254 721 880 321" } },
-      { id: "TEN-004", propertyId: "prop-ab-kilimani", name: "Dennis Mutua Musyoka", email: "d.mutua@safaricom.co.ke", phone: "+254 724 991 034", nationalId: "29801243", unitId: "B201", occupation: "Principal Fintech Architect (Safaricom)", vehiclePlate: "KDH 512B", leaseStart: "2025-08-01", leaseEnd: "2027-07-31", depositAmount: 50000, status: "active", arrears: 0, emergencyContact: { name: "Faith Musyoka", relation: "Sister", phone: "+254 712 344 911" } }
-    ];
-
-    // Seed Invoices
-    initialDb.invoices = [
-      { id: "INV-2026-10-A302", propertyId: "prop-ab-kilimani", unitId: "A302", tenantId: "TEN-001", tenantName: "Sharon Akinyi Ochieng", month: "October 2026", issueDate: "2026-10-01", dueDate: "2026-10-05", baseRent: 75000, serviceCharge: 8000, waterUnits: 12, waterRate: 160, waterAmount: 1920, garbageFee: 1500, latePenalty: 0, totalAmount: 86420, amountPaid: 86420, balance: 0, status: "paid" },
-      { id: "INV-2026-10-A204", propertyId: "prop-ab-kilimani", unitId: "A204", tenantId: "TEN-002", tenantName: "Brian Kiprop Cheruiyot", month: "October 2026", issueDate: "2026-10-01", dueDate: "2026-10-05", baseRent: 105000, serviceCharge: 9000, waterUnits: 15, waterRate: 160, waterAmount: 2400, garbageFee: 1500, latePenalty: 5745, totalAmount: 123645, amountPaid: 0, balance: 123645, status: "overdue" },
-      { id: "INV-2026-10-A604", propertyId: "prop-ab-kilimani", unitId: "A604", tenantId: "TEN-003", tenantName: "Dr. Amina Mohamed Hassan", month: "October 2026", issueDate: "2026-10-01", dueDate: "2026-10-05", baseRent: 165000, serviceCharge: 13000, waterUnits: 18, waterRate: 160, waterAmount: 2880, garbageFee: 1500, latePenalty: 0, totalAmount: 182380, amountPaid: 182380, balance: 0, status: "paid" },
-      { id: "INV-2026-10-B201", propertyId: "prop-ab-kilimani", unitId: "B201", tenantId: "TEN-004", tenantName: "Dennis Mutua Musyoka", month: "October 2026", issueDate: "2026-10-01", dueDate: "2026-10-05", baseRent: 50000, serviceCharge: 6000, waterUnits: 8, waterRate: 160, waterAmount: 1280, garbageFee: 1500, latePenalty: 0, totalAmount: 58780, amountPaid: 58780, balance: 0, status: "paid" }
-    ];
-
-    // Seed Payments
-    initialDb.payments = [
-      { id: "PAY-1001", propertyId: "prop-ab-kilimani", receiptNumber: "AB-RCPT-2026-1041", invoiceId: "INV-2026-10-A302", unitId: "A302", tenantId: "TEN-001", tenantName: "Sharon Akinyi Ochieng", amount: 86420, paymentMethod: "mpesa_paybill", reference: "SLK92H81QP", phoneNumber: "+254 722 341 890", date: "2026-10-03 10:22:15", status: "Verified", description: "Rent & Utilities Oct 2026" },
-      { id: "PAY-1002", propertyId: "prop-ab-kilimani", receiptNumber: "AB-RCPT-2026-1042", invoiceId: "INV-2026-10-A604", unitId: "A604", tenantId: "TEN-003", tenantName: "Dr. Amina Mohamed Hassan", amount: 182380, paymentMethod: "bank_transfer", reference: "NCBA-FT-9912048", phoneNumber: "+254 701 552 198", date: "2026-10-02 14:10:48", status: "Verified", description: "Oct 2026 Penthouse Rent via NCBA EFT" },
-      { id: "PAY-1003", propertyId: "prop-ab-kilimani", receiptNumber: "AB-RCPT-2026-1043", invoiceId: "INV-2026-10-B201", unitId: "B201", tenantId: "TEN-004", tenantName: "Dennis Mutua Musyoka", amount: 58780, paymentMethod: "mpesa_stk", reference: "SLK71X04MN", phoneNumber: "+254 724 991 034", date: "2026-10-04 09:30:12", status: "Verified", description: "STK Push Express Checkout" }
-    ];
-
-    // Seed Maintenance
-    initialDb.maintenance = [
-      { id: "TKT-108", propertyId: "prop-ab-kilimani", ticketNo: "TKT-108", unitId: "A204", reportedBy: "Brian Kiprop", category: "Plumbing", priority: "High", title: "Master bathroom shower mixer pressure drop", description: "Thermostatic mixer calcified", status: "In Progress", reportedDate: "2026-10-04 11:20", assignedFundi: "Fundi Juma Plumbing", fundiPhone: "+254 721 884 102", estimatedCost: 6500 },
-      { id: "TKT-109", propertyId: "prop-ab-kilimani", ticketNo: "TKT-109", unitId: "Block A & B", reportedBy: "Caretaker Francis", category: "Elevator", priority: "Urgent", title: "Schindler Lift #2 routine brake safety inspection", description: "AMC Preventative maintenance", status: "Open", reportedDate: "2026-10-05 08:00", assignedFundi: "Schindler Lifts EA Ltd", fundiPhone: "+254 20 690 1000", estimatedCost: 38000 }
-    ];
-
-    // Seed Expenses
-    initialDb.expenses = [
-      { id: "EXP-101", propertyId: "prop-ab-kilimani", date: "2026-10-01", category: "Security & Biometrics", description: "Securex 24/7 Guard patrol & biometric gate maintenance", amount: 195000, payee: "Securex Security Systems Ltd", paymentMethod: "bank_transfer", reference: "EFT-SCX-99120", status: "Paid" },
-      { id: "EXP-102", propertyId: "prop-ab-kilimani", date: "2026-10-02", category: "Common Utilities (KPLC)", description: "Kenya Power Common Services (Lifts, pool, security lights)", amount: 88400, payee: "Kenya Power & Lighting Co", paymentMethod: "mpesa_paybill", reference: "SLJ991208K", status: "Paid" }
-    ];
-
-    // Seed Notices
-    initialDb.notices = [
-      { id: "NOT-201", propertyId: "prop-ab-kilimani", date: "2026-10-05", title: "Quarterly Water Storage Disinfection & Pressure Test", target: "All Residents", channel: "SMS & Tenant Portal", priority: "Important", message: "Davis & Shirtliff engineers will conduct routine sanitation of overhead tanks on Saturday 11th Oct from 9:00 AM." },
-      { id: "NOT-202", propertyId: "prop-ab-kilimani", date: "2026-10-01", title: "Monthly Rent Due Reminder (October 2026)", target: "All Residents", channel: "SMS & Email", priority: "Standard", message: "Rent and utilities are due on or before 5th October via Safaricom Paybill 408920." }
-    ];
-
+    const initialDb = getEmptyDatabase();
     this.save(initialDb);
     return initialDb;
   }
@@ -262,7 +91,7 @@ class Database {
 
     this.data.properties.push(newProp);
 
-    // Auto-generate starter units for the new client
+    // Auto-generate starter units for the new client according to their structure
     const numFloors = newProp.floors;
     const unitsPerFloor = Math.ceil(newProp.totalUnits / numFloors);
     let count = 0;
@@ -279,8 +108,8 @@ class Database {
           floor: fl,
           type: u === 1 ? "Studio" : u === 2 ? "1-Bedroom" : "2-Bedroom Deluxe",
           sqm: u === 1 ? 45 : u === 2 ? 65 : 110,
-          baseRent: u === 1 ? 45000 : u === 2 ? 65000 : 95000,
-          serviceCharge: 6000,
+          baseRent: parseFloat(propData.startingRent) || 50000,
+          serviceCharge: parseFloat(propData.serviceCharge) || 6000,
           status: "vacant",
           kplcMeter: `MTR-${id.slice(-4)}-${unitNum}`,
           waterMeter: `WTR-${unitNum}`

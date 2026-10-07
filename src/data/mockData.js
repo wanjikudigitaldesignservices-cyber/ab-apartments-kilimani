@@ -856,8 +856,8 @@ export function calculateStats(units, tenants, invoices, payments, expenses, mai
   };
 }
 
-// LocalStorage Persistence Keys
-const STORAGE_PREFIX = "ab_apartments_";
+// LocalStorage Persistence Keys (Universal RentSync)
+const STORAGE_PREFIX = "rentsync_rms_";
 
 export function loadStoredData(key, fallback) {
   try {
@@ -881,7 +881,7 @@ export function saveStoredData(key, value) {
 export function clearAllStoredData() {
   try {
     Object.keys(localStorage).forEach(k => {
-      if (k.startsWith(STORAGE_PREFIX)) {
+      if (k.startsWith("rentsync_rms_") || k.startsWith("ab_apartments_")) {
         localStorage.removeItem(k);
       }
     });

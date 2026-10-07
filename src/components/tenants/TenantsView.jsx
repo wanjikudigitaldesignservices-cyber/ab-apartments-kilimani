@@ -23,6 +23,7 @@ import {
 
 export function TenantsView() {
   const {
+    propertyInfo,
     tenants,
     units,
     invoices,
@@ -75,7 +76,7 @@ export function TenantsView() {
         <div>
           <h2>Tenants & Digital Lease Register</h2>
           <p className="text-muted">
-            Managing executive lease contracts, biometric credentials, and residency records for AB Apartments
+            Managing executive lease contracts, credentials, and residency records for {propertyInfo?.name || "your property"}
           </p>
         </div>
 

@@ -150,7 +150,7 @@ export function MpesaStkModal() {
                   </div>
                   <div className="stk-row">
                     <span className="label">Merchant:</span>
-                    <strong className="val">AB APARTMENTS</strong>
+                    <strong className="val">{(propertyInfo?.name || "ESTATE MANAGEMENT").toUpperCase()}</strong>
                   </div>
                   <div className="stk-amount-highlight">
                     <span className="currency">KES</span>
@@ -234,7 +234,7 @@ export function MpesaStkModal() {
                     <span className="sms-time">Just now</span>
                   </div>
                   <p className="sms-body">
-                    {txCode} Confirmed. KES {parseFloat(amount).toLocaleString()} sent to AB APARTMENTS PAYBILL {propertyInfo.billing.mpesaPaybill} for Account {unitId} on {new Date().toLocaleDateString()}. Thank you.
+                    {txCode} Confirmed. KES {parseFloat(amount).toLocaleString()} sent to {(propertyInfo?.name || "ESTATE").toUpperCase()} PAYBILL {propertyInfo?.billing?.mpesaPaybill || "400000"} for Account {unitId} on {new Date().toLocaleDateString()}. Thank you.
                   </p>
                 </div>
 

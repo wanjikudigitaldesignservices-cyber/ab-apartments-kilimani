@@ -168,8 +168,8 @@ export function ReportsModal() {
           <div className="report-signatures-row" style={{ marginTop: '40px' }}>
             <div className="sig-block">
               <div className="sig-line"></div>
-              <strong>Patrick Kariuki</strong>
-              <div className="font-xs text-muted">Certified Property Manager, AB Apartments Kilimani</div>
+              <strong>{propertyInfo?.contacts?.manager || propertyInfo?.contacts?.propertyManager || "Authorized Property Manager"}</strong>
+              <div className="font-xs text-muted">Certified Management Account, {propertyInfo?.name || "Executive Estate"}</div>
             </div>
 
             <div className="sig-block">

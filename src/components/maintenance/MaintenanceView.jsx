@@ -18,6 +18,7 @@ import {
 
 export function MaintenanceView() {
   const {
+    propertyInfo,
     maintenance,
     updateMaintenanceTicket,
     setIsAddMaintenanceModalOpen,
@@ -67,7 +68,7 @@ export function MaintenanceView() {
         <div>
           <h2>Facilities Maintenance & Contractor Work Orders</h2>
           <p className="text-muted">
-            Managing preventative and tenant-reported facility repairs across AB Apartments Kilimani
+            Managing preventative and tenant-reported facility repairs across {propertyInfo?.name || "your estate"}
           </p>
         </div>
 

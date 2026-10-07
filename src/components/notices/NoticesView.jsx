@@ -32,13 +32,13 @@ export function NoticesView() {
       title: "Monthly Rent Due Reminder",
       target: "All Residents",
       priority: "Standard",
-      text: `Dear Resident of AB Apartments Kilimani, kindly note that rent and service charges for the current billing cycle are due on or before 5th of the month via Safaricom Paybill ${propertyInfo.billing.mpesaPaybill}, Account Number: [Your Unit No, e.g. A302]. Thank you for your partnership.`
+      text: `Dear Resident of ${propertyInfo?.name || "our estate"}, kindly note that rent and service charges for the current billing cycle are due on or before 5th of the month via Safaricom Paybill ${propertyInfo?.billing?.mpesaPaybill || "Paybill"}, Account Number: [Your Unit No]. Thank you for your partnership.`
     },
     {
       title: "Rent Overdue Notice (5% Late Fee)",
       target: "Overdue Accounts",
       priority: "Urgent",
-      text: `Urgent Notice: Your rent and utilities for Unit [Unit No] at AB Apartments Kilimani remain outstanding past the 5th due date. A 5% late penalty has been applied to your ledger. Please settle immediately via Paybill ${propertyInfo.billing.mpesaPaybill} to prevent utility disruption.`
+      text: `Urgent Notice: Your rent and utilities for Unit [Unit No] at ${propertyInfo?.name || "our estate"} remain outstanding past the 5th due date. A 5% late penalty has been applied to your ledger. Please settle immediately via Paybill ${propertyInfo?.billing?.mpesaPaybill || "Paybill"} to prevent utility disruption.`
     },
     {
       title: "Overhead Water Tank Cleaning Notice",
@@ -193,9 +193,9 @@ export function NoticesView() {
 
             <div className="device-bubble-container">
               <div className="sms-chat-bubble animate-fade-in">
-                <div className="bubble-header">{title || "AB APARTMENTS NOTICE"}</div>
+                <div className="bubble-header">{title || `${(propertyInfo?.name || "ESTATE").toUpperCase()} NOTICE`}</div>
                 <p className="bubble-body">
-                  {message || "Dear Resident, this is a live preview of how broadcast messages appear on tenant mobile devices across Kilimani."}
+                  {message || `Dear Resident, this is a live preview of how broadcast messages appear on tenant mobile devices across ${propertyInfo?.name || "our property"}.`}
                 </p>
                 <div className="bubble-time">
                   {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • SMS

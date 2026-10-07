@@ -57,38 +57,37 @@ export function UniversalLandingView({ onEnterConsole, onOpenSignUp, onOpenSignI
   const [country, setCountry] = useState('Kenya');
 
   // Architecture & Units
-  const [blocksInput, setBlocksInput] = useState('Block A (Sunburst Wing), Block B (Jacaranda Wing)');
-  const [floorsCount, setFloorsCount] = useState('6');
-  const [unitsCount, setUnitsCount] = useState('48');
-  const [startingRent, setStartingRent] = useState('65000');
-  const [serviceCharge, setServiceCharge] = useState('7500');
+  const [blocksInput, setBlocksInput] = useState('Block A, Block B');
+  const [floorsCount, setFloorsCount] = useState('4');
+  const [unitsCount, setUnitsCount] = useState('24');
+  const [startingRent, setStartingRent] = useState('55000');
+  const [serviceCharge, setServiceCharge] = useState('5000');
 
   // Billing & M-Pesa
   const [currency, setCurrency] = useState('KES');
   const [currencySymbol, setCurrencySymbol] = useState('KSh');
-  const [mpesaPaybill, setMpesaPaybill] = useState('408920');
-  const [mpesaTill, setMpesaTill] = useState('982145');
-  const [bankName, setBankName] = useState('NCBA Bank Kenya PLC');
-  const [bankBranch, setBankBranch] = useState('Upper Hill Branch');
-  const [bankAccount, setBankAccount] = useState('1002938471001');
+  const [mpesaPaybill, setMpesaPaybill] = useState('400000');
+  const [mpesaTill, setMpesaTill] = useState('123456');
+  const [bankName, setBankName] = useState('NCBA Bank Kenya');
+  const [bankBranch, setBankBranch] = useState('Main Branch');
+  const [bankAccount, setBankAccount] = useState('100200300400');
   const [dueDay, setDueDay] = useState('5');
   const [lateFeePercent, setLateFeePercent] = useState('5');
   const [waterRate, setWaterRate] = useState('160');
 
   // Amenities & Staff
   const [amenities, setAmenities] = useState([
-    'High-Speed Schindler Elevators',
-    'Borehole with RO Filtration System',
-    'Standby Automatic Generator (250kVA)',
-    '24/7 Biometric Security Gate & CCTV',
-    'Rooftop Heated Pool & Fitness Gym'
+    'High-Speed Elevators',
+    'Borehole & Backup Water System',
+    'Standby Automatic Generator',
+    '24/7 Security Gate & CCTV'
   ]);
-  const [managerName, setManagerName] = useState('Patrick Kariuki');
-  const [managerPhone, setManagerPhone] = useState('+254 722 980 120');
-  const [managerEmail, setManagerEmail] = useState('management@estate.co.ke');
-  const [caretakerName, setCaretakerName] = useState('Francis Mwangi');
-  const [caretakerPhone, setCaretakerPhone] = useState('+254 711 445 522');
-  const [securityPhone, setSecurityPhone] = useState('+254 733 998 811');
+  const [managerName, setManagerName] = useState('');
+  const [managerPhone, setManagerPhone] = useState('');
+  const [managerEmail, setManagerEmail] = useState('');
+  const [caretakerName, setCaretakerName] = useState('');
+  const [caretakerPhone, setCaretakerPhone] = useState('');
+  const [securityPhone, setSecurityPhone] = useState('');
 
   const toggleAmenity = (item) => {
     if (amenities.includes(item)) {
@@ -154,11 +153,6 @@ export function UniversalLandingView({ onEnterConsole, onOpenSignUp, onOpenSignI
     onEnterConsole();
   };
 
-  const handleLaunchDemoProperty = (propId) => {
-    switchProperty(propId);
-    onEnterConsole();
-  };
-
   return (
     <div className="universal-landing-root animate-fade-in">
       {/* Top Universal RMS Navigation Bar */}
@@ -197,13 +191,28 @@ export function UniversalLandingView({ onEnterConsole, onOpenSignUp, onOpenSignI
             <span>Client Sign Up</span>
           </button>
 
-          <button 
-            className="btn-primary btn-sm"
-            onClick={() => handleLaunchDemoProperty("prop-ab-kilimani")}
-          >
-            <span>Launch Live Console</span>
-            <ArrowRight size={14} />
-          </button>
+          {properties.length > 0 ? (
+            <button 
+              className="btn-primary btn-sm"
+              onClick={onEnterConsole}
+              title="Open Management Console"
+            >
+              <span>Management Console</span>
+              <ArrowRight size={14} />
+            </button>
+          ) : (
+            <button 
+              className="btn-primary btn-sm"
+              onClick={() => {
+                const el = document.getElementById('onboarding-studio');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              title="Start Onboarding Wizard"
+            >
+              <span>Setup Estate</span>
+              <ArrowRight size={14} />
+            </button>
+          )}
         </div>
       </nav>
 
@@ -801,35 +810,40 @@ export function UniversalLandingView({ onEnterConsole, onOpenSignUp, onOpenSignI
               </div>
             </div>
 
-            {/* Quick Demo Launch Options */}
-            <div className="demo-estates-card glass-card">
+            {/* Universal Getting Started Guide */}
+            <div className="setup-guide-card glass-card">
               <div className="section-header">
                 <div className="title-with-badge">
-                  <Play size={16} className="text-gold" />
-                  <h4>Explore Pre-Configured Demo Estates</h4>
+                  <Sparkles size={16} className="text-gold" />
+                  <h4>Fast-Track 3-Step Estate Launch</h4>
                 </div>
               </div>
-              <p className="font-xs text-muted" style={{ marginBottom: '12px' }}>
-                Want to test-drive an existing rental environment right away? Click any estate below:
+              <p className="font-xs text-muted" style={{ marginBottom: '14px' }}>
+                Complete the setup wizard on the left to activate your personalized property workspace:
               </p>
 
-              <div className="demo-cards-list">
-                {properties.map(p => (
-                  <div
-                    key={p.id}
-                    className="demo-item-card glass-card"
-                    onClick={() => handleLaunchDemoProperty(p.id)}
-                  >
-                    <div className="demo-info">
-                      <strong>{p.name}</strong>
-                      <div className="font-xs text-muted">{p.city} • {p.totalUnits} Units • Paybill {p.billing.mpesaPaybill}</div>
-                    </div>
-                    <button className="btn-secondary btn-xs">
-                      <span>Launch</span>
-                      <ArrowRight size={12} />
-                    </button>
+              <div className="setup-steps-list">
+                <div className="setup-step-item">
+                  <div className="step-num-badge">1</div>
+                  <div className="step-text">
+                    <strong>Specify Building Layout</strong>
+                    <p className="font-xs text-muted">Set up blocks, floors, and unit count to auto-generate floor matrices.</p>
                   </div>
-                ))}
+                </div>
+                <div className="setup-step-item">
+                  <div className="step-num-badge">2</div>
+                  <div className="step-text">
+                    <strong>Link M-Pesa & Bank Paybills</strong>
+                    <p className="font-xs text-muted">Input your Daraja Paybill or Till for instant STK Push automation.</p>
+                  </div>
+                </div>
+                <div className="setup-step-item">
+                  <div className="step-num-badge">3</div>
+                  <div className="step-text">
+                    <strong>Deploy & Manage Real-Time</strong>
+                    <p className="font-xs text-muted">Click 'Provision Property & Launch Console' to enter your clean management console.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

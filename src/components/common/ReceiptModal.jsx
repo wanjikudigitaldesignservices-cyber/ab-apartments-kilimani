@@ -165,7 +165,7 @@ export function ReceiptModal() {
             {/* Official Stamp */}
             <div className="official-stamp-container">
               <div className="official-stamp">
-                <span className="stamp-line">AB APARTMENTS KILIMANI</span>
+                <span className="stamp-line">{(propertyInfo?.name || "ESTATE MANAGEMENT").toUpperCase()}</span>
                 <span className="stamp-status">★ RECEIVED & VERIFIED ★</span>
                 <span className="stamp-date">{new Date().toLocaleDateString()}</span>
                 <span className="stamp-auth">MANAGEMENT ACCOUNTS</span>

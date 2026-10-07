@@ -2796,46 +2796,59 @@
   border-radius: var(--radius-full);
 }
 
-/* Pre-Configured Demo Estates Card */
-.demo-estates-card {
+/* Universal Getting Started Guide Card */
+.setup-guide-card {
   padding: 24px;
   background: rgba(15, 23, 42, 0.85);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
 }
 
-.demo-cards-list {
+.setup-steps-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
   margin-top: 14px;
 }
 
-.demo-item-card {
+.setup-step-item {
   padding: 14px 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
+  align-items: flex-start;
+  gap: 14px;
   transition: all 0.2s ease;
 }
 
-.demo-item-card:hover {
-  border-color: var(--emerald-500);
-  transform: translateX(4px);
-  background: rgba(16, 185, 129, 0.06);
+.setup-step-item:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.04);
 }
 
-.demo-info {
+.step-num-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--emerald-500);
+  color: var(--emerald-400);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-text {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
-.demo-info strong {
+.step-text strong {
   font-size: 14px;
   color: var(--text-main);
 }

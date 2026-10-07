@@ -66,15 +66,18 @@ export function Navbar() {
           <div className="client-select-wrapper">
             <select
               className="client-property-select"
-              value={currentPropertyId}
+              value={currentPropertyId || (properties[0]?.id || '__add_new__')}
               onChange={(e) => {
                 if (e.target.value === '__add_new__') {
                   setIsAddPropertyModalOpen(true);
-                } else {
+                } else if (e.target.value !== '__none__') {
                   switchProperty(e.target.value);
                 }
               }}
             >
+              {properties.length === 0 && (
+                <option value="__none__">No Estate Configured</option>
+              )}
               {properties.map(p => (
                 <option key={p.id} value={p.id}>
                   🏢 {p.name} ({p.totalUnits} Units)
@@ -84,8 +87,8 @@ export function Navbar() {
             </select>
           </div>
           <div className="brand-sub-row">
-            <span className="location-pill">{currentProperty.city}, {currentProperty.county || currentProperty.country}</span>
-            <span className="client-org-tag font-xs text-muted">{currentProperty.clientName}</span>
+            <span className="location-pill">{currentProperty?.city || "Universal Cloud"}, {currentProperty?.county || currentProperty?.country || "Kenya"}</span>
+            <span className="client-org-tag font-xs text-muted">{currentProperty?.clientName || "Universal RMS"}</span>
           </div>
         </div>
       </div>
@@ -108,7 +111,7 @@ export function Navbar() {
         <Search size={16} className="search-icon" />
         <input
           type="text"
-          placeholder={`Search ${currentProperty.name} units, tenants, paybills...`}
+          placeholder={`Search ${currentProperty?.name || 'estate'} units, tenants, paybills...`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -164,13 +167,24 @@ export function Navbar() {
           <div className="quick-actions-group">
             <button 
               className="btn-mpesa btn-sm"
-              onClick={() => launchMpesaStkPush({
-                phone: tenants[0]?.phone || "+254 722 341 890",
-                unitId: tenants[0]?.unitId || "A302",
-                amount: 86420,
-                tenantName: tenants[0]?.name || "Resident"
-              })}
-              title={`Simulate M-Pesa STK Push for Paybill ${currentProperty.billing.mpesaPaybill}`}
+              onClick={() => {
+                if (tenants.length > 0) {
+                  launchMpesaStkPush({
+                    phone: tenants[0].phone,
+                    unitId: tenants[0].unitId,
+                    amount: tenants[0].baseRent || 50000,
+                    tenantName: tenants[0].name
+                  });
+                } else {
+                  launchMpesaStkPush({
+                    phone: "+254 700 000 000",
+                    unitId: "101",
+                    amount: 50000,
+                    tenantName: "Resident"
+                  });
+                }
+              }}
+              title={`Simulate M-Pesa STK Push for Paybill ${currentProperty?.billing?.mpesaPaybill || 'Daraja'}`}
             >
               <Smartphone size={16} />
               <span>M-Pesa STK</span>
@@ -210,7 +224,7 @@ export function Navbar() {
           {/* Client Account Profile Pill */}
           {currentUser && (
             <div className="client-user-pill no-mobile" title={`Logged in as ${currentUser.name} (${currentUser.company || 'Client'})`}>
-              <div className="user-avatar-circle">{currentUser.avatar || 'PK'}</div>
+              <div className="user-avatar-circle">{currentUser.avatar || 'CL'}</div>
               <div className="user-text-meta">
                 <span className="user-name-text">{currentUser.name.split(' ')[0]}</span>
                 <span className="user-plan-tag">{currentUser.plan || 'Pro'}</span>
@@ -252,11 +266,11 @@ export function Navbar() {
           <button
             className="icon-btn reset-btn no-mobile"
             onClick={() => {
-              if (window.confirm("Reset all client data to defaults?")) {
+              if (window.confirm("Reset all client data to a fresh blank workspace?")) {
                 resetToDefault();
               }
             }}
-            title="Reset to Factory Defaults"
+            title="Reset to Clean Blank State"
           >
             <RotateCcw size={17} />
           </button>
